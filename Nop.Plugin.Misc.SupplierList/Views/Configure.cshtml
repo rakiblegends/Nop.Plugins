@@ -1,0 +1,147 @@
+@model SupplierSearchModel
+@{
+    Layout = "_AdminLayout";
+    //title
+    ViewBag.PageTitle = T("Plugins.Misc.SupplierList.PageTitle").Text;
+}
+
+@using Nop.Web.Areas.Admin.Models.Common;
+@using Nop.Web.Framework.Models.DataTables;
+@using Nop.Web.Framework.Models.Extensions;
+
+@await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_supplier_list_buttons_before", additionalData = Model })
+
+<div class="content-header clearfix">
+    <h1 class="float-left">
+        @T("Plugins.Misc.SupplierList.PageTitle")
+        <small>
+            <i class="fas fa-arrow-circle-left"></i>
+            <a asp-action="List" asp-controller="Plugin" asp-area="Admin">@T("Plugins.Misc.SupplierList.BackToList")</a>
+        </small>
+    </h1>
+    <div class="float-right">
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fas fa-plus-square"></i>
+            @T("Plugins.Misc.SupplierList.AddNewSupplier")
+        </a>
+        @await Component.InvokeAsync("AdminWidget", new { widgetZone = "admin_supplier_list_buttons", additionalData = Model })
+    </div>
+</div>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="form-horizontal">
+            <div class="cards-group">
+                <div class="card card-default card-search">
+                    <div class="card-body">
+                        <div class="row search-row @(!Model.HideSearchBlock ? "search-row-opened" : "")" data-hideAttribute="@nameof(Model.HideSearchBlock)">
+                            <div class="search-text">@T("Admin.Common.Search")</div>
+                            <div class="icon-search"><i class="fas fa-search" aria-hidden="true"></i></div>
+                            <div class="icon-collapse"><i class="far fa-angle-@(!Model.HideSearchBlock ? "up" : "down")" aria-hidden="true"></i></div>
+                        </div>
+
+                        <div class="search-body @(Model.HideSearchBlock ? "d-none" : "")">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="Name" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="Name" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <div class="col-md-4">
+                                            <nop-label asp-for="PhoneNumber" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <nop-editor asp-for="PhoneNumber" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="text-center col-12">
+                                    <button type="button" id="search-suppliers" class="btn btn-primary btn-search">
+                                        <i class="fas fa-search"></i>
+                                        @T("Admin.Common.Search")
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-body">
+                        @await Html.PartialAsync("Table", new DataTablesModel
+                        {
+                            Name = "suppliers-grid",
+                            UrlRead = new DataUrl("List", "SupplierList", null),
+                            SearchButtonId = "search-suppliers",
+                            Length = Model.PageSize,
+                            LengthMenu = Model.AvailablePageSizes,
+                            Filters = new List<FilterParameter>
+                            {
+                                new FilterParameter(nameof(Model.Name)),
+                                new FilterParameter(nameof(Model.PhoneNumber))
+                            },
+                            ColumnCollection = new List<ColumnProperty>
+                            {
+                                new ColumnProperty(nameof(SupplierModel.Name))
+                                {
+                                    Title = T("Plugins.Misc.SupplierList.Fields.Name").Text,
+                                    Width = "200"
+                                },
+                                new ColumnProperty(nameof(SupplierModel.Email))
+                                {
+                                    Title = T("Plugins.Misc.SupplierList.Fields.Email").Text,
+                                    Width = "200"
+                                },
+                                new ColumnProperty(nameof(SupplierModel.PhoneNumber))
+                                {
+                                    Title = T("Plugins.Misc.SupplierList.Fields.PhoneNumber").Text,
+                                    Width = "150"
+                                },
+                                new ColumnProperty(nameof(SupplierModel.Address))
+                                {
+                                    Title = T("Plugins.Misc.SupplierList.Fields.Address").Text,
+                                    Width = "250"
+                                },
+                                new ColumnProperty(nameof(SupplierModel.IsActive))
+                                {
+                                    Title = T("Plugins.Misc.SupplierList.Fields.IsActive").Text,
+                                    Width = "100",
+                                    ClassName = NopColumnClassDefaults.CenterAll,
+                                    Render = new RenderBoolean()
+                                },
+                                new ColumnProperty(nameof(SupplierModel.DisplayOrder))
+                                {
+                                    Title = T("Plugins.Misc.SupplierList.Fields.DisplayOrder").Text,
+                                    Width = "100",
+                                    ClassName = NopColumnClassDefaults.CenterAll
+                                },
+                                new ColumnProperty(nameof(SupplierModel.Id))
+                                {
+                                    Title = T("Admin.Common.Edit").Text,
+                                    Width = "100",
+                                    ClassName = NopColumnClassDefaults.Button,
+                                    Render = new RenderButtonEdit(new DataUrl("Edit"))
+                                }
+                            }
+                        })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@{
+    //custom tabs
+    var hiddenTabs = new List<(string tabId, string hiddenInput)>();
+    var customTabs = new List<(string tabId, string tabName, string tabContent)>();
+} 

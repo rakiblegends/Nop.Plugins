@@ -1,0 +1,133 @@
+@model SupplierModel
+@using Nop.Core.Domain.Common
+@using Nop.Services.Common
+@using Nop.Web.Framework.UI
+@using Nop.Core
+@using Nop.Web.Framework
+@using Nop.Web.Framework.Models
+@using Nop.Web.Framework.Models.DataTables
+@using Nop.Web.Framework.Models.Extensions
+@using Nop.Web.Areas.Admin.Models.Common
+@using Nop.Web.Framework.Infrastructure
+@using Nop.Web.Framework.Infrastructure.Extensions
+@using Nop.Web.Framework.TagHelpers.Shared
+@inject IWorkContext workContext
+@inject IGenericAttributeService genericAttributeService
+
+@{
+    //page title
+    ViewBag.PageTitle = T("Plugins.Misc.SupplierList.AddNewSupplier").Text;
+    //active menu item (system name)
+    NopHtml.SetActiveMenuItemSystemName("SupplierList");
+}
+
+@{
+    const string hideInfoBlockAttributeName = "SupplierPage.HideInfoBlock";
+    var customer = await workContext.GetCurrentCustomerAsync();
+    var hideInfoBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideInfoBlockAttributeName);
+
+    const string hideAdvancedBlockAttributeName = "SupplierPage.HideAdvancedBlock";
+    var hideAdvancedBlock = await genericAttributeService.GetAttributeAsync<bool>(customer, hideAdvancedBlockAttributeName, defaultValue: true);
+}
+
+<form asp-controller="SupplierList" asp-action="Create" method="post">
+    <div class="content-header clearfix">
+        <h1 class="float-left">
+            @T("Plugins.Misc.SupplierList.AddNewSupplier")
+            <small>
+                <i class="fas fa-arrow-circle-left"></i>
+                <a asp-action="Configure">@T("Plugins.Misc.SupplierList.BackToList")</a>
+            </small>
+        </h1>
+        <div class="float-right">
+            <button type="submit" name="save" class="btn btn-primary">
+                <i class="far fa-floppy-disk"></i>
+                @T("Admin.Common.Save")
+            </button>
+            <button type="submit" name="save-continue" class="btn btn-primary">
+                <i class="far fa-floppy-disk"></i>
+                @T("Admin.Common.SaveContinue")
+            </button>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="form-horizontal">
+                <div class="row">
+                    <div class="col-md-12 clearfix">
+                        <div class="float-left">
+                            @await Component.InvokeAsync("SettingMode", new { modeName = "supplier-advanced-mode" })
+                        </div>
+                    </div>
+                </div>
+
+                <nop-cards id="supplier-cards">
+                    <nop-card asp-name="supplier-info" asp-icon="fas fa-info" asp-title="@T("Plugins.Misc.SupplierList.Info")" asp-hide-block-attribute-name="@hideInfoBlockAttributeName" asp-hide="@hideInfoBlock" asp-advanced="false">
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="Name" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="Name" asp-required="true" />
+                                    <span asp-validation-for="Name"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="Email" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="Email" asp-required="true" />
+                                    <span asp-validation-for="Email"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="PhoneNumber" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="PhoneNumber" />
+                                    <span asp-validation-for="PhoneNumber"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="Address" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="Address" />
+                                    <span asp-validation-for="Address"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="IsActive" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="IsActive" />
+                                    <span asp-validation-for="IsActive"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </nop-card>
+
+                    <nop-card asp-name="supplier-advanced" asp-icon="fas fa-cogs" asp-title="@T("Plugins.Misc.SupplierList.Advanced")" asp-hide-block-attribute-name="@hideAdvancedBlockAttributeName" asp-hide="@hideAdvancedBlock" asp-advanced="true">
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <div class="col-md-3">
+                                    <nop-label asp-for="DisplayOrder" />
+                                </div>
+                                <div class="col-md-9">
+                                    <nop-editor asp-for="DisplayOrder" />
+                                    <span asp-validation-for="DisplayOrder"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </nop-card>
+                </nop-cards>
+            </div>
+        </div>
+    </section>
+</form> 
